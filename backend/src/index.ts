@@ -6,7 +6,7 @@ const api = express();
 
 
 api.use(cors({
-	origin: ["https://bpf.vercel.app"],
+	origin: ["https://bpf-rk5n1t7sq-srisunsris-projects.vercel.app"],
 	methods: ["POST", "GET"],
 	credentials: true
 }));

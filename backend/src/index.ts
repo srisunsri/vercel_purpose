@@ -5,7 +5,11 @@ import cors from "cors";
 const api = express();
 
 
-api.use(cors());
+api.use(cors({
+	origin: ["https://bpf.vercel.app"],
+	methods: ["POST", "GET"],
+	credentials: true
+}));
 api.use(express.json());
 api.use(indexRouter);
 

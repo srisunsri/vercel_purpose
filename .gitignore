@@ -1,0 +1,7 @@
+.env
+node_modules/
+*.pdf
+trainee*.html
+*.mp3
+extras
+__pycache__/

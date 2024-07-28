@@ -1,0 +1,177 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Fresher {
+  id        String @id @default(cuid()) @map("_id")
+  username  String @unique
+  email     String @unique
+  password  String
+  testScore Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Advanced       Advanced?
+  FresherModules FresherModules[]
+}
+
+model Advanced {
+  id        String @id @default(cuid()) @map("_id")
+  username  String @unique
+  email     String @unique
+  password  String
+  fresherId String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Fresher  Fresher    @relation(fields: [fresherId], references: [id])
+  Customer Customer[]
+}
+
+model Customer {
+  id        String  @id @default(cuid()) @map("_id")
+  name      String
+  email     String?
+  trainerId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Advanced        Advanced         @relation(fields: [trainerId], references: [id])
+  Report          Report[]
+  CustomerDetails CustomerDetails?
+  EndLine         EndLine?
+}
+
+model CustomerDetails {
+  id                          String        @id @default(cuid()) @map("_id")
+  customerId                  String        @unique
+  village                     String
+  district                    String
+  age                         Int
+  phNo                        BigInt        @unique
+  business                    String
+  maritalStatus               maritalEnum
+  religion                    religionEnum
+  caste                       casteEnum
+  education                   educationEnum
+  areThereSupportingPeople    Boolean
+  numberOfWorkingDaysPerMonth Int
+  dailyEarning                Int
+  aadharCard                  String?
+  PANCard                     String?
+  rationCard                  String?
+  bankAccount                 String?
+
+  Customer Customer @relation(fields: [customerId], references: [id])
+}
+
+enum maritalEnum {
+  Single
+  Married
+  Divorced
+}
+
+enum religionEnum {
+  Hindu
+  Muslim
+  Christian
+  Sikh
+  Jain
+  Buddhist
+  Atheist
+  Others
+}
+
+enum casteEnum {
+  SC
+  ST
+  OBC
+  Others
+}
+
+enum educationEnum {
+  Illiterate
+  Standard_1_5
+  Standard_6_10
+  Standard_10
+  Standard_11_12
+  Standard_12
+  Undergraduate_not_passed
+  Undergraduate
+  Graduate_not_passed
+  Graduate
+  Others
+}
+
+model Modules {
+  id         String @id @default(cuid()) @map("_id")
+  moduleName String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  FresherModules FresherModules[]
+}
+
+model FresherModules {
+  id        String  @id @default(cuid()) @map("_id")
+  fresherId String
+  moduleId  String
+  completed Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Fresher   Fresher  @relation(fields: [fresherId], references: [id])
+  Modules   Modules  @relation(fields: [moduleId], references: [id])
+
+  @@unique([fresherId, moduleId])
+}
+
+model Report {
+  id           String @id @default(cuid()) @map("_id")
+  customerId   String
+  profit       Float
+  income       Float
+  jsonInsights Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Customer Customer @relation(fields: [customerId], references: [id])
+}
+
+model EndLine {
+  id             String    @id @default(cuid()) @map("_id")
+  customerId     String    @unique
+  familyBusiness Boolean
+  business1      String
+  startDate1     DateTime
+  business2      String?
+  startDate2     DateTime?
+
+  Customer Customer @relation(fields: [customerId], references: [id])
+}
+
+model TestQuestions {
+  id       String @id @default(cuid()) @map("_id")
+  question String
+  answer   Int
+  optionA  String
+  optionB  String
+  optionC  String
+  optionD  String
+}
